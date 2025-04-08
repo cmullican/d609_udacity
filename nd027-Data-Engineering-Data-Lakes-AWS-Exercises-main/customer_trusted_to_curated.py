@@ -33,16 +33,16 @@ accelerometerlanding_node1743987235151 = glueContext.create_dynamic_frame.from_c
 customer_trusted_node1743987315066 = glueContext.create_dynamic_frame.from_catalog(database="stedi", table_name="customer_trusted", transformation_ctx="customer_trusted_node1743987315066")
 
 # Script generated for node filter
-SqlQuery4939 = '''
+SqlQuery6219 = '''
 select distinct ct.* from al
 join ct on al.user = ct.email
 '''
-filter_node1743987255288 = sparkSqlQuery(glueContext, query = SqlQuery4939, mapping = {"al":accelerometerlanding_node1743987235151, "ct":customer_trusted_node1743987315066}, transformation_ctx = "filter_node1743987255288")
+filter_node1743987255288 = sparkSqlQuery(glueContext, query = SqlQuery6219, mapping = {"al":accelerometerlanding_node1743987235151, "ct":customer_trusted_node1743987315066}, transformation_ctx = "filter_node1743987255288")
 
 # Script generated for node customer curated
 EvaluateDataQuality().process_rows(frame=filter_node1743987255288, ruleset=DEFAULT_DATA_QUALITY_RULESET, publishing_options={"dataQualityEvaluationContext": "EvaluateDataQuality_node1743981919602", "enableDataQualityResultsPublishing": True}, additional_options={"dataQualityResultsPublishing.strategy": "BEST_EFFORT", "observations.scope": "ALL"})
 customercurated_node1743987480878 = glueContext.getSink(path="s3://cmulli/customer/curated/", connection_type="s3", updateBehavior="UPDATE_IN_DATABASE", partitionKeys=[], enableUpdateCatalog=True, transformation_ctx="customercurated_node1743987480878")
-customercurated_node1743987480878.setCatalogInfo(catalogDatabase="stedi",catalogTableName="accelerometer_trusted")
+customercurated_node1743987480878.setCatalogInfo(catalogDatabase="stedi",catalogTableName="customer_curated")
 customercurated_node1743987480878.setFormat("json")
 customercurated_node1743987480878.writeFrame(filter_node1743987255288)
 job.commit()
