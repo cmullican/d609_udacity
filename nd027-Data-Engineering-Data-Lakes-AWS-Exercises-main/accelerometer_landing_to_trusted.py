@@ -33,11 +33,12 @@ accelerometerlanding_node1743987235151 = glueContext.create_dynamic_frame.from_c
 customer_trusted_node1743987315066 = glueContext.create_dynamic_frame.from_catalog(database="stedi", table_name="customer_trusted", transformation_ctx="customer_trusted_node1743987315066")
 
 # Script generated for node filter
-SqlQuery5119 = '''
-select al.* from al
+SqlQuery6267 = '''
+select distinct al.* from al
 join ct on al.user = ct.email
+where al.timestamp >= ct.sharewithresearchasofdate;
 '''
-filter_node1743987255288 = sparkSqlQuery(glueContext, query = SqlQuery5119, mapping = {"al":accelerometerlanding_node1743987235151, "ct":customer_trusted_node1743987315066}, transformation_ctx = "filter_node1743987255288")
+filter_node1743987255288 = sparkSqlQuery(glueContext, query = SqlQuery6267, mapping = {"al":accelerometerlanding_node1743987235151, "ct":customer_trusted_node1743987315066}, transformation_ctx = "filter_node1743987255288")
 
 # Script generated for node accelerometer trusted
 EvaluateDataQuality().process_rows(frame=filter_node1743987255288, ruleset=DEFAULT_DATA_QUALITY_RULESET, publishing_options={"dataQualityEvaluationContext": "EvaluateDataQuality_node1743981919602", "enableDataQualityResultsPublishing": True}, additional_options={"dataQualityResultsPublishing.strategy": "BEST_EFFORT", "observations.scope": "ALL"})

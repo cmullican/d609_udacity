@@ -28,14 +28,13 @@ CustomerCurated_node1744087689967 = glueContext.create_dynamic_frame.from_catalo
 AccerometerTrusted_node1744087753352 = glueContext.create_dynamic_frame.from_catalog(database="stedi", table_name="accelerometer_trusted", transformation_ctx="AccerometerTrusted_node1744087753352")
 
 # Script generated for node filter step_trainer data
-SqlQuery6155 = '''
-select stl.* 
+SqlQuery6338 = '''
+select distinct stl.sensorReadingTime, stl.serialNumber, stl.distanceFromObject
 from stl 
 join at on stl.sensorReadingTime = at.timeStamp
-join cc on at.user = cc.email and stl.serialNumber = cc.serialNumber
-
+join cc on at.user = cc.email
 '''
-filterstep_trainerdata_node1744087799450 = sparkSqlQuery(glueContext, query = SqlQuery6155, mapping = {"stl":StepTrainer_node1744087565697, "cc":CustomerCurated_node1744087689967, "at":AccerometerTrusted_node1744087753352}, transformation_ctx = "filterstep_trainerdata_node1744087799450")
+filterstep_trainerdata_node1744087799450 = sparkSqlQuery(glueContext, query = SqlQuery6338, mapping = {"stl":StepTrainer_node1744087565697, "cc":CustomerCurated_node1744087689967, "at":AccerometerTrusted_node1744087753352}, transformation_ctx = "filterstep_trainerdata_node1744087799450")
 
 # Script generated for node Step Trainer Trusted
 StepTrainerTrusted_node1744088089501 = glueContext.write_dynamic_frame.from_catalog(frame=filterstep_trainerdata_node1744087799450, database="stedi", table_name="step_trainer_trusted", additional_options={"enableUpdateCatalog": True, "updateBehavior": "UPDATE_IN_DATABASE"}, transformation_ctx="StepTrainerTrusted_node1744088089501")

@@ -28,17 +28,18 @@ DEFAULT_DATA_QUALITY_RULESET = """
 
 # Script generated for node step_trainer_trusted
 step_trainer_trusted_node1744158184175 = glueContext.create_dynamic_frame.from_catalog(database="stedi", table_name="step_trainer_trusted", transformation_ctx="step_trainer_trusted_node1744158184175")
+step_trainer_trusted_node_resolved = step_trainer_trusted_node1744158184175.resolveChoice(specs = [('sensorreadingtime','cast:long'), ('distancefromobject', 'cast:int')])
 
 # Script generated for node accelerometer_trusted
 accelerometer_trusted_node1744158233302 = glueContext.create_dynamic_frame.from_catalog(database="stedi", table_name="accelerometer_trusted", transformation_ctx="accelerometer_trusted_node1744158233302")
 
 # Script generated for node join and filter
-SqlQuery6792 = '''
+SqlQuery6692 = '''
 select distinct stt.*, at.x, at.y, at.z
 from stt
 join at on stt.sensorReadingTime = at.timestamp
 '''
-joinandfilter_node1744158267278 = sparkSqlQuery(glueContext, query = SqlQuery6792, mapping = {"stt":step_trainer_trusted_node1744158184175, "at":accelerometer_trusted_node1744158233302}, transformation_ctx = "joinandfilter_node1744158267278")
+joinandfilter_node1744158267278 = sparkSqlQuery(glueContext, query = SqlQuery6692, mapping = {"stt":step_trainer_trusted_node_resolved, "at":accelerometer_trusted_node1744158233302}, transformation_ctx = "joinandfilter_node1744158267278")
 
 # Script generated for node machine_learning_curated
 EvaluateDataQuality().process_rows(frame=joinandfilter_node1744158267278, ruleset=DEFAULT_DATA_QUALITY_RULESET, publishing_options={"dataQualityEvaluationContext": "EvaluateDataQuality_node1744158077799", "enableDataQualityResultsPublishing": True}, additional_options={"dataQualityResultsPublishing.strategy": "BEST_EFFORT", "observations.scope": "ALL"})
