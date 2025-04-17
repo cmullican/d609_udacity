@@ -18,23 +18,20 @@ spark = glueContext.spark_session
 job = Job(glueContext)
 job.init(args['JOB_NAME'], args)
 
-# Script generated for node Step Trainer
-StepTrainer_node1744087565697 = glueContext.create_dynamic_frame.from_options(format_options={"multiLine": "false"}, connection_type="s3", format="json", connection_options={"paths": ["s3://cmulli/step_trainer/"], "recurse": True}, transformation_ctx="StepTrainer_node1744087565697")
+# Script generated for node Step Trainer Landing
+StepTrainerLanding_node1744777062263 = glueContext.create_dynamic_frame.from_catalog(database="stedi", table_name="step_trainer_landing", transformation_ctx="StepTrainerLanding_node1744777062263")
 
-# Script generated for node Customer Curated
-CustomerCurated_node1744087689967 = glueContext.create_dynamic_frame.from_catalog(database="stedi", table_name="customer_curated", transformation_ctx="CustomerCurated_node1744087689967")
-
-# Script generated for node Accerometer Trusted
-AccerometerTrusted_node1744087753352 = glueContext.create_dynamic_frame.from_catalog(database="stedi", table_name="accelerometer_trusted", transformation_ctx="AccerometerTrusted_node1744087753352")
+# Script generated for node Customer Trusted
+CustomerTrusted_node1744775159654 = glueContext.create_dynamic_frame.from_catalog(database="stedi", table_name="customer_curated", transformation_ctx="CustomerTrusted_node1744775159654")
 
 # Script generated for node filter step_trainer data
-SqlQuery6338 = '''
-select distinct stl.sensorReadingTime, stl.serialNumber, stl.distanceFromObject
+SqlQuery10774 = '''
+select stl.*
 from stl 
-join at on stl.sensorReadingTime = at.timeStamp
-join cc on at.user = cc.email
+join cc on stl.serialNumber = cc.serialNumber
+where stl.sensorreadingtime > 0
 '''
-filterstep_trainerdata_node1744087799450 = sparkSqlQuery(glueContext, query = SqlQuery6338, mapping = {"stl":StepTrainer_node1744087565697, "cc":CustomerCurated_node1744087689967, "at":AccerometerTrusted_node1744087753352}, transformation_ctx = "filterstep_trainerdata_node1744087799450")
+filterstep_trainerdata_node1744087799450 = sparkSqlQuery(glueContext, query = SqlQuery10774, mapping = {"cc":CustomerTrusted_node1744775159654, "stl":StepTrainerLanding_node1744777062263}, transformation_ctx = "filterstep_trainerdata_node1744087799450")
 
 # Script generated for node Step Trainer Trusted
 StepTrainerTrusted_node1744088089501 = glueContext.write_dynamic_frame.from_catalog(frame=filterstep_trainerdata_node1744087799450, database="stedi", table_name="step_trainer_trusted", additional_options={"enableUpdateCatalog": True, "updateBehavior": "UPDATE_IN_DATABASE"}, transformation_ctx="StepTrainerTrusted_node1744088089501")
